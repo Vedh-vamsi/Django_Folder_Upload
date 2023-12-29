@@ -1,0 +1,48 @@
+<!-- members/templates/members/folder_upload.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folder Upload</title>
+</head>
+<body>
+    <h1>Folder Upload</h1>
+
+    <form id="folderUploadForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="folder">Select Folder to Upload:</label>
+        <input type="file" id="folder" name="folder" webkitdirectory directory multiple required>
+        <button type="button" onclick="uploadFolder()">Upload Folder</button>
+    </form>
+
+    <div id="uploadMessage"></div>
+
+    <script>
+        function uploadFolder() {
+            var form = document.getElementById('folderUploadForm');
+            var formData = new FormData(form);
+            fetch('/members/handle_folder_upload/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                var uploadMessageDiv = document.getElementById('uploadMessage');
+                uploadMessageDiv.innerHTML = '<p>' + data.message + '</p>';
+            })
+            .catch(error => console.error('Error:', error));
+            console.log("...",formData)
+        }
+    </script>
+    <div>
+    <h1>Uploaded Folder Contents</h1>
+    <ul>
+        {% for item in directory_contents %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+</body>
+</html>
